@@ -5,7 +5,6 @@ from typing import List
 app = FastAPI()
 
 class Habito(BaseModel):
-    id: int
     id: int = 0
     nome: str
     descricao: str = ""
@@ -22,14 +21,14 @@ def root():
 def listar_habitos():
     return habitos_db
 
-@app.post("/habitos")
+@app.post("/habitos", response_model=Habito)
 def criar_habito(habito: Habito):
     global contador_id
-    habito.id = contador_id
+    novo = Habito(id=contador_id, nome=habito.nome, descricao=habito.descricao)
+    habitos_db.append(novo)
     contador_id += 1
-    habitos_db.append(habito)
-    return habito
+    return novo
 
 if __name__ == "__main__":
     import uvicorn
-    uvicorn.run(app, host="0.0.0.0", port=8000)
+    uvicorn.run(app, host="127.0.0.1", port=8000)
